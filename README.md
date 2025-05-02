@@ -44,20 +44,20 @@
 ```bash
 git clone https://github.com/your-org/mcp-os.git
 cd mcp-os
-pnpm install   # 或 npm / yarn
+npm install   # 或 npm / yarn
 ```
 
 ### 2. 构建检索索引
 
 ```bash
 # 扫描本地 / 远程 MCP 描述，生成向量索引
-pnpm run build:index --src ./mcp_list.json --out ./index
+npm run build:index --src ./mcp_list.json --out ./index
 ```
 
 ### 3. 启动 Retriever Server
 
 ```bash
-pnpm run start:retriever
+npm run start:retriever
 # 默认监听 127.0.0.1:5500，支持 HTTP / SSE
 ```
 

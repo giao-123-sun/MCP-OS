@@ -45,20 +45,20 @@ As the **Model Context Protocol (MCP)** ecosystem explodes, hundreds of MCP serv
 ```bash
 git clone https://github.com/your-org/mcp-os.git
 cd mcp-os
-pnpm install      # or npm / yarn
+npm install      # or npm / yarn
 ```
 
 ### 2. Build the Vector Index
 
 ```bash
 # Scan local / remote MCP metadata and create an index
-pnpm run build:index --src ./mcp_list.json --out ./index
+npm run build:index --src ./mcp_list.json --out ./index
 ```
 
 ### 3. Start the Retriever Server
 
 ```bash
-pnpm run start:retriever
+npm run start:retriever
 # Default listens on 127.0.0.1:5500 (HTTP + SSE)
 ```
 
