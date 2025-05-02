@@ -1,9 +1,6 @@
 # MCP-OS · Model Context Protocol Orchestration System  
 > **Let your large language model focus on solving tasks—not wading through a sea of MCPs.**
 
-![CI](https://img.shields.io/github/actions/workflow/status/your-org/mcp-os/ci.yml?label=CI)  
-![License](https://img.shields.io/github/license/your-org/mcp-os)  
-![Version](https://img.shields.io/github/v/release/your-org/mcp-os)
 
 ---
 
@@ -161,7 +158,7 @@ Implement the `VectorStore` interface: `src/store/yourStore.ts`.
 ---
 
 ## 📜 License
-[MIT](./LICENSE)
+[Apache License v2](./LICENSE)
 
 ---
 

@@ -1,10 +1,6 @@
 # MCP-OS · Model Context Protocol Orchestration System  
 > **让你的大模型只关注解决问题，而不是在茫茫 MCP 中“择木而栖”**
 
-![CI](https://img.shields.io/github/actions/workflow/status/your-org/mcp-os/ci.yml?label=CI)  
-![License](https://img.shields.io/github/license/your-org/mcp-os)  
-![Version](https://img.shields.io/github/v/release/your-org/mcp-os)
-
 ---
 
 ## ✨ 项目愿景
