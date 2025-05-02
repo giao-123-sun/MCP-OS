@@ -1,7 +1,7 @@
 ```markdown
 # MCP-OS · Model Context Protocol Orchestration System  
 > **让你的大模型只关注解决问题，而不是在茫茫 MCP 中“择木而栖”**
-
+> **👉 [查看英文版 README](./README_en-EN.md)**
 ---
 
 ## ✨ 项目愿景

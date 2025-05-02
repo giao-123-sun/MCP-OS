@@ -1,70 +1,72 @@
 # MCP-OS · Model Context Protocol Orchestration System  
-> **让你的大模型只关注解决问题，而不是在茫茫 MCP 中“择木而栖”**
+> **Let your large language model focus on solving tasks—not wading through a sea of MCPs.**
+
+> **👉 [查看中文版 README](./README_zh-CN.md)**
 
 ---
 
-## ✨ 项目愿景
-随着 **Model Context Protocol (MCP)** 生态迅猛发展，海量的 MCP Server 给 LLM 带来了三大痛点：
+## ✨ Project Vision
+As the **Model Context Protocol (MCP)** ecosystem explodes, hundreds of MCP servers create three familiar headaches:
 
-| 痛点 | 描述 |
-| ---- | ---- |
-| Prompt 膨胀 | 长篇 MCP 描述占据上下文，模型“挑工具”远多于 **planning / analysis** |
-| 连接治理 | 需要实时监控 *哪些* MCP 可用、*是否*满足当前任务 |
-| 资源安全 | 长时间开放的 MCP Server 造成 **内存占用**、**接口暴露** 等风险 |
+| Pain Point | Description |
+| ---------- | ----------- |
+| **Prompt Bloat** | Lengthy MCP descriptions crowd the context window; the model spends more tokens picking tools than **planning / analysis**. |
+| **Connection Hygiene** | We must constantly track *which* MCPs are alive and *whether* they satisfy the current task. |
+| **Resource & Security** | Always-on MCP servers consume memory and expose interfaces, increasing attack surface. |
 
-**MCP-OS** 的目标是：  
-> *“像操作系统管理进程一样管理 MCP，让 LLM 获得‘用时即检、闲时即卸’的极简体验。”*
-
----
-
-## 🌟 当前阶段：MCP-Retriever（已完成 ✅）
-1. **向量化检索** —— 对任务描述生成 Embedding，在 MCP 索引中召回 Top-k 候选  
-2. **轻量提示模板** —— 仅将 *Top-k* MCP 描述拼接进 Prompt，平均节省 70% Token  
-3. **可插拔后端** —— 默认使用 `openai/embeddings`，支持 Any-Vector-DB（FAISS, Qdrant, Milvus …）
-
-> 📖 详细实现请见 [`/packages/retriever`](./packages/retriever) 目录。
+**MCP-OS** aims to:  
+> *“Manage MCPs the way an operating system manages processes—load on demand, unload when idle.”*
 
 ---
 
-## 🛣️ 路线图
+## 🌟 Current Phase: MCP-Retriever (Completed ✅)
+1. **Vector Retrieval** — Embed task descriptions and retrieve Top-k MCPs from a vector index.  
+2. **Slim Prompt Template** — Inject only the *Top-k* MCP descriptions, saving ~70 % prompt tokens on average.  
+3. **Pluggable Back-ends** — Default `openai/embeddings`; swap in FAISS, Qdrant, Milvus, etc.
 
-| 里程碑 | 功能 | 进度 |
-| ------ | ---- | ---- |
-| v0.1   | **MCP-Retriever**：检索式匹配 | ✅ 已发布 |
-| v0.2   | **Health-Check Daemon**：自动探活 & 失效剔除 | ⏳ 进行中 |
-| v0.3   | **Runtime Manager**：需求驱动的 MCP Server 启停 | 🕑 规划 |
-| v1.0   | **Policy Sandbox**：权限、速率、费用的细粒度控制 | 🕑 规划 |
+> 📖 Details in [`/packages/retriever`](./packages/retriever).
 
 ---
 
-## ⚙️ 快速开始
+## 🛣️ Roadmap
 
-### 1. 克隆与安装
+| Milestone | Feature | Status |
+| --------- | ------- | ------ |
+| **v0.1**  | **MCP-Retriever** – vector search | ✅ Released |
+| **v0.2**  | **Health-Check Daemon** – auto heartbeat & pruning | ⏳ In progress |
+| **v0.3**  | **Runtime Manager** – on-demand MCP start/stop | 🗓 Planned |
+| **v1.0**  | **Policy Sandbox** – fine-grained auth, rate, cost | 🗓 Planned |
+
+---
+
+## ⚙️ Quick Start
+
+### 1. Clone & Install
 
 ```bash
 git clone https://github.com/your-org/mcp-os.git
 cd mcp-os
-npm install   # 或 npm / yarn
+npm install      # or npm / yarn
 ```
 
-### 2. 构建检索索引
+### 2. Build the Vector Index
 
 ```bash
-# 扫描本地 / 远程 MCP 描述，生成向量索引
+# Scan local / remote MCP metadata and create an index
 npm run build:index --src ./mcp_list.json --out ./index
 ```
 
-### 3. 启动 Retriever Server
+### 3. Start the Retriever Server
 
 ```bash
 npm run start:retriever
-# 默认监听 127.0.0.1:5500，支持 HTTP / SSE
+# Default listens on 127.0.0.1:5500 (HTTP + SSE)
 ```
 
-### 4. 在 LLM / Agent 中调用
+### 4. Wire It into Your LLM / Agent
 
 ```jsonc
-// 以 Claude Desktop 为例
+// Example: Claude Desktop
 {
   "mcpServers": {
     "mcp-os": {
@@ -74,15 +76,15 @@ npm run start:retriever
 }
 ```
 
-或者直接通过 REST：
+Or call the REST endpoint:
 
 ```bash
 curl -X POST http://localhost:5500/match \
   -H "Content-Type: application/json" \
-  -d '{"task": "爬取一个网页并提取标题"}'
+  -d '{"task": "Scrape a web page and extract its title"}'
 ```
 
-返回示例：
+Sample response:
 
 ```json
 {
@@ -91,37 +93,36 @@ curl -X POST http://localhost:5500/match \
       "id": "web-scraper",
       "score": 0.89,
       "functions": ["fetchHtml", "querySelector"]
-    },
-    ...
+    }
   ]
 }
 ```
 
 ---
 
-## 📂 目录结构
+## 📂 Repository Layout
 ```
 mcp-os/
 ├─ packages/
-│  ├─ retriever/        # 阶段一：向量检索
-│  ├─ health-check/     # 阶段二：探活守护进程（开发中）
-│  └─ runtime-manager/  # 阶段三：按需启停（规划）
-├─ scripts/             # CLI & 辅助脚本
-├─ examples/            # 使用示例
-└─ docs/                # 架构设计与进阶指南
+│  ├─ retriever/        # Phase 1: vector retrieval
+│  ├─ health-check/     # Phase 2: heartbeat daemon (WIP)
+│  └─ runtime-manager/  # Phase 3: load/unload (planned)
+├─ scripts/             # CLI helpers
+├─ examples/            # Usage demos
+└─ docs/                # Architecture & deep dives
 ```
 
 ---
 
-## 🧩 配置文件格式
+## 🧩 MCP List Format
 
-`mcp_list.json` 用来描述 MCP 元数据：
+`mcp_list.json` describes MCP metadata:
 
 ```json
 {
   "web-scraper": {
     "name": "Web Scraper MCP",
-    "description": "爬取网页并解析 DOM",
+    "description": "Fetches HTML and parses DOM.",
     "functions": ["fetchHtml", "querySelector"]
   },
   "calc": { ... }
@@ -130,30 +131,30 @@ mcp-os/
 
 ---
 
-## 📝 常见问题
+## ❓ FAQ
 
 <details>
-<summary>检索效果不理想，如何调参？</summary>
+<summary>Retrieval quality is poor—how do I tune it?</summary>
 
-- 增大 `topK` 提升召回率
-- 切换更强的 Embedding 模型
-- 调整任务描述归一化规则
+* Increase `topK` for higher recall.  
+* Switch to a stronger embedding model.  
+* Refine task-text normalization rules.
 </details>
 
 <details>
-<summary>如何接入自定义存储？</summary>
+<summary>How do I plug in my own vector store?</summary>
 
-实现 `VectorStore` 接口即可：`src/store/yourStore.ts`
+Implement the `VectorStore` interface: `src/store/yourStore.ts`.
 </details>
 
 ---
 
 ## 🤝 Contributing
 
-1. **Fork** 本仓库  
-2. 新建分支 `feature/awesome-stuff`  
-3. 提交 PR，并在描述中关联 Issue  
-4. 等待 CI 通过 & Review 🎉
+1. **Fork** the repo  
+2. Create a branch `feature/awesome-stuff`  
+3. Open a PR and link related issues  
+4. Wait for CI + review 🎉
 
 ---
 
@@ -163,6 +164,6 @@ mcp-os/
 ---
 
 ## 🙏 Acknowledgements
-- **Model Context Protocol (MCP)** 社区提供的开放规范  
-- [MCP Inspector](https://github.com/modelcontextprotocol/inspector) 调试工具  
-- 以及所有提交 Issue / PR 的开源贡献者们 ❤️
+- The **Model Context Protocol** community for the open specification  
+- [MCP Inspector](https://github.com/modelcontextprotocol/inspector) for debugging  
+- Everyone who files issues or PRs—thank you! ❤️
