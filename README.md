@@ -162,7 +162,7 @@ mcp-os/
 ---
 
 ## 📜 License
-[MIT](./LICENSE)
+[Apache License v2](./LICENSE)
 
 ---
 
