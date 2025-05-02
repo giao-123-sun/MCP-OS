@@ -1,4 +1,3 @@
-```markdown
 # MCP-OS · Model Context Protocol Orchestration System  
 > **让你的大模型只关注解决问题，而不是在茫茫 MCP 中“择木而栖”**
 
@@ -171,6 +170,3 @@ mcp-os/
 - **Model Context Protocol (MCP)** 社区提供的开放规范  
 - [MCP Inspector](https://github.com/modelcontextprotocol/inspector) 调试工具  
 - 以及所有提交 Issue / PR 的开源贡献者们 ❤️
-```
-
-> **提示**：将文件保存为 `README.md` 即可直接在 GitHub 上渲染。欢迎根据实际代码路径、命令脚本或徽章链接做微调。
