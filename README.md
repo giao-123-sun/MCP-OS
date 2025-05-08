@@ -33,8 +33,9 @@ As the **Model Context Protocol (MCP)** ecosystem explodes, hundreds of MCP serv
 | Milestone | Feature | Status |
 | --------- | ------- | ------ |
 | **v0.1**  | **MCP-Retriever** – vector search | ✅ Released |
-| **v0.2**  | **Health-Check Daemon** – auto heartbeat & pruning | ⏳ In progress |
-| **v0.3**  | **Runtime Manager** – on-demand MCP start/stop | 🗓 Planned |
+| **v0.2**  | **MCP-Retriever** - light version | ⏳ In progress |
+| **v0.3**  | **Health-Check Daemon** – auto heartbeat & pruning | ⏳ In progress |
+| **v0.4**  | **Runtime Manager** – on-demand MCP start/stop | 🗓 Planned |
 | **v1.0**  | **Policy Sandbox** – fine-grained auth, rate, cost | 🗓 Planned |
 
 ---
