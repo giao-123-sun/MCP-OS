@@ -1,0 +1,32 @@
+{
+  "weather-api": {
+    "name": "mcp-Weather API MCP",
+    "description": "查询和获取世界各地天气情况的API",
+    "functions": ["getCurrentWeather", "getWeatherForecast", "getHistoricalWeather"]
+  },
+  "translation": {
+    "name": "mcp-翻译助手MCP",
+    "description": "提供多语言翻译和语言识别功能",
+    "functions": ["translateText", "detectLanguage", "getSupportedLanguages"]
+  },
+  "code-assistant": {
+    "name": "mcp-代码助手MCP",
+    "description": "帮助编写和调试各种编程语言的代码",
+    "functions": ["generateCode", "explainCode", "refactorCode", "fixBugs"]
+  },
+  "database-helper": {
+    "name": "mcp-数据库助手MCP",
+    "description": "帮助处理数据库查询和结构设计",
+    "functions": ["generateSQL", "optimizeQuery", "modelDatabase"]
+  },
+  "file-system": {
+    "name": "mcp-文件系统MCP",
+    "description": "提供文件操作和管理功能",
+    "functions": ["readFile", "writeFile", "listDirectory", "searchFiles"]
+  },
+  "image-generator": {
+    "name": "mcp-图像生成MCP",
+    "description": "根据文本描述生成和编辑图像",
+    "functions": ["generateImage", "editImage", "describeImage"]
+  }
+} 

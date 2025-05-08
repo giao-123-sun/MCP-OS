@@ -1,0 +1,29 @@
+{
+  "name": "rag-mcp",
+  "version": "0.1.0",
+  "description": "MCP_matcher for LLM in use.",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "rag-mcp": "./build/index.js"
+  },
+  "files": [
+    "build"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "build:unix": "tsc && node -e \"require('fs').chmodSync('build/index.js', '755')\"",
+    "prepare": "npm run build",
+    "watch": "tsc --watch",
+    "inspector": "npx @modelcontextprotocol/inspector build/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.11.0",
+    "inspector": "^0.11.0",
+    "openai": "^4.96.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.24",
+    "typescript": "^5.3.3"
+  }
+}
