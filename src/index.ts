@@ -22,6 +22,7 @@ import {
 import * as fs from 'fs';
 import * as path from 'path';
 import { OpenAI } from 'openai'; // 引入 OpenAI
+import { RagMatchEngine } from './ragEngine.js';
 
 /**
  * Type alias for an MCP object.
@@ -53,6 +54,7 @@ const defaultMcps: { [id: string]: MCPInfo } = {
 
 // 用于存储实际使用的MCP数据
 let mcps: { [id: string]: MCPInfo } = {};
+let ragEngine: RagMatchEngine | null = null;
 
 
 /**
@@ -60,7 +62,7 @@ let mcps: { [id: string]: MCPInfo } = {};
  * @param filePath Path to the mcp.json file, defaults to 'mcp.json' in the current directory
  * @return true if file was loaded successfully, false otherwise
  */
-function loadMCPsFromFile(filePath: string = 'mcp.json'): boolean {
+async function loadMCPsFromFile(filePath: string = 'mcp.json'): Promise<boolean> {
   try {
     console.error(`Attempting to load MCPs from: ${filePath}`);
     if (fs.existsSync(filePath)) {
@@ -80,14 +82,12 @@ function loadMCPsFromFile(filePath: string = 'mcp.json'): boolean {
       // 打印所有可用的MCP ID，方便调试
       console.error(`Available MCP IDs: ${Object.keys(mcps).join(', ')}`);
       
-      // 初始化或更新RAG引擎 (注释掉)
-      /*
       if (!ragEngine) {
         ragEngine = new RagMatchEngine(mcps);
+        await ragEngine.init();
       } else {
-        ragEngine.setMCPs(mcps);
+        await ragEngine.setMCPs(mcps);
       }
-      */
       return true;
     } else {
       console.error(`MCP file not found at: ${filePath}, using default MCPs`);
@@ -95,14 +95,12 @@ function loadMCPsFromFile(filePath: string = 'mcp.json'): boolean {
       mcps = { ...defaultMcps };
       console.error(`Using ${Object.keys(mcps).length} default MCPs`);
       
-      // 初始化RAG引擎 (注释掉)
-      /*
       if (!ragEngine) {
         ragEngine = new RagMatchEngine(mcps);
+        await ragEngine.init();
       } else {
-        ragEngine.setMCPs(mcps);
+        await ragEngine.setMCPs(mcps);
       }
-      */
       return false;
     }
   } catch (error) {
@@ -111,14 +109,12 @@ function loadMCPsFromFile(filePath: string = 'mcp.json'): boolean {
     mcps = { ...defaultMcps };
     console.error(`Using ${Object.keys(mcps).length} default MCPs due to error`);
     
-    // 初始化RAG引擎 (注释掉)
-    /*
     if (!ragEngine) {
       ragEngine = new RagMatchEngine(mcps);
+      await ragEngine.init();
     } else {
-      ragEngine.setMCPs(mcps);
+      await ragEngine.setMCPs(mcps);
     }
-    */
     return false;
   }
 }
@@ -212,6 +208,18 @@ function findMatchingMCPs(taskDescription: string): {
   return result;
 }
 */
+
+/**
+ * 使用向量检索匹配 MCP
+ */
+async function findMatchingMCPs(taskDescription: string): Promise<{ bestMatchId: string | null, matchIds: string[] }> {
+  if (!ragEngine) {
+    return { bestMatchId: null, matchIds: [] };
+  }
+  const bestMatchId = await ragEngine.findBestMatch(taskDescription);
+  const matchIds = await ragEngine.findTopMatches(taskDescription, 5);
+  return { bestMatchId, matchIds };
+}
 
 /**
  * 使用 LLM 查找匹配的 MCP
@@ -385,12 +393,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         throw new Error("Task description is required");
       }
 
-      // 调用新的 LLM 匹配函数
-      // const matchResult = findMatchingMCPs(taskDescription); // 旧调用
-      const matchResult = await findMatchingMCPsWithLLM(taskDescription);
+      const matchResult = await findMatchingMCPs(taskDescription);
       
       const bestMatch = matchResult.bestMatchId;
-      const matches = matchResult.relevantMatchIds; // LLM可能返回多个相关匹配
+      const matches = matchResult.matchIds;
       
       // 格式化响应 (后续需要根据 matchResult 调整)
       let responseText = "";
@@ -398,20 +404,20 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       // 添加最佳匹配部分
       if (bestMatch && mcps[bestMatch]) { // 确保 bestMatch ID 有效
         const mcp = mcps[bestMatch];
-        responseText += `## LLM 推荐的最佳匹配 MCP\n\n`;
+        responseText += `## 最佳匹配的 MCP\n\n`;
         responseText += `- **${mcp.name}** (ID: ${bestMatch})\n`;
         // responseText += `  相似度: ${bestMatchScore ? (bestMatchScore * 100).toFixed(1) + '%' : 'N/A'}\n`; // LLM 不直接提供分数
         responseText += `  描述: ${mcp.description}\n`;
         responseText += `  函数: ${mcp.functions.join(", ")}\n\n`;
       } else if (bestMatch) {
-         responseText += `## LLM 推荐的最佳匹配 MCP\n\n`;
+         responseText += `## 最佳匹配的 MCP\n\n`;
          responseText += `- ID: ${bestMatch} (未在当前加载的 MCP 中找到详细信息)\n\n`;
       }
-      
+
       // 添加所有匹配部分
-      responseText += `## LLM 识别的相关 MCP\n\n`;
-      
-      if (matches.length === 0 && !bestMatch) { // 如果LLM没有返回任何ID
+      responseText += `## 相关 MCP\n\n`;
+
+      if (matches.length === 0 && !bestMatch) { // 如果没有找到任何匹配
         responseText += "没有找到匹配的MCP。\n";
       } else {
         matches.forEach(id => {
@@ -503,7 +509,7 @@ server.setRequestHandler(GetPromptRequestSchema, async (request) => {
  */
 async function main() {
   // 在服务器启动前加载MCP数据
-  const loaded = loadMCPsFromFile('mcp.json');
+  const loaded = await loadMCPsFromFile('mcp.json');
   if (!loaded) {
     console.error("Failed to load external MCP configuration, using defaults");
   }
